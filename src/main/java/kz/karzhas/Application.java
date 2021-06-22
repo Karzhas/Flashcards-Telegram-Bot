@@ -4,21 +4,34 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import kz.karzhas.telegram_bot.UpdatesListenerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 
 
 @SpringBootApplication
+@EnableAsync
 public class Application {
 
-  @Autowired
   UpdatesListenerImpl updatesListener;
-  String token = "1846265656:AAG5Ag6rj7ErfHGnem-yDqlQEvcYKvEiIZU";
+  TelegramBot bot;
+  @Value("${bot.token}")
+  String token;
 
+  @Autowired
+  public void setUpdatesListener(UpdatesListenerImpl updatesListener) {
+    this.updatesListener = updatesListener;
+  }
+
+  @Autowired
+  public void setBot(TelegramBot bot) {
+    this.bot = bot;
+  }
 
   public static void main(String... args) {
     SpringApplication.run(Application.class, args);
@@ -26,7 +39,6 @@ public class Application {
 
   @PostConstruct
   private void botInit(){
-    TelegramBot bot = new TelegramBot(token);
     bot.setUpdatesListener(updatesListener);
   }
 
@@ -35,5 +47,9 @@ public class Application {
     return new RestTemplate();
   }
 
+  @Bean
+  public TelegramBot getTelegramBot(){
+    return new TelegramBot(token);
+  }
 
 }

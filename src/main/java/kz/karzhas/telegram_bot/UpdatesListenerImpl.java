@@ -2,61 +2,79 @@ package kz.karzhas.telegram_bot;
 
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import io.reactivex.schedulers.Schedulers;
+import kz.karzhas.camunda.CamundaRest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class UpdatesListenerImpl implements UpdatesListener {
 
-    String baseurl = "http://localhost:8080/engine-rest/";
+
+    private CamundaRest camundaRest;
+    private BotCommandsImpl botCommands;
 
     @Autowired
-    RestTemplate restTemplate;
+    public UpdatesListenerImpl(CamundaRest camundaRest, BotCommandsImpl botCommands) {
+        this.camundaRest = camundaRest;
+        this.botCommands = botCommands;
+    }
 
     @Override
     public int process(List<Update> updates) {
-        //updates.forEach(update -> System.out.println(update.message().text()));
-        updates.forEach(update -> {
-            switch (update.message().text()){
-                case "start": start(); break;
+        try {
+            updates.forEach(update -> {
+                if(update.callbackQuery() != null)
+                    processCallbackQuery(update);
+                else
+                    processMessage(update);
 
-            }
-        });
-        // ... process updates
-        // return id of last processed update or confirm them all
+            });
+        }catch (Exception e){
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
+        }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    private void start() {
-        String url = baseurl + "process-definition/key/flashcards/start";
+    private void processMessage(Update update) {
+        switch (update.message().text()) {
+            case "start": // TODO: сделать инлайн через /
+                startProcess(update);
+                break;
 
-        ResponseEntity<String> response = null;
-        try {
-            MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-            Map map = new HashMap<String, String>();
-            map.put("Content-Type", "application/json");
-            headers.setAll(map);
-            HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>("{}", headers);
-            response = restTemplate.exchange(url, HttpMethod.POST, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
-            });
-            System.out.println(response);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
         }
-        System.out.println("wtf");
-        //
+    }
 
+    private void processCallbackQuery(Update update) {
+        switch (update.callbackQuery().data()){
+            case MessageConstants.ADD_FLASHCARD_CALLBACK_QUERY_ID:
+                System.out.println("1");
+                break;
+            case MessageConstants.GET_ALL_FLASHCARDS_CALLBACK_QUERY_ID:
+                System.out.println("2");
+                break;
+            case MessageConstants.START_LEARNING_FLASHCARDS_CALLBACK_QUERY_ID:
+                System.out.println("3");
+                break;
+        }
+    }
 
-        //System.out.println(result);
+    private void startProcess(Update update) {
+        int messageId = update.message().messageId();
+        long chatId = update.message().chat().id();
+        botCommands.sendMessage(chatId, MessageConstants.CAMUNDA_PROCESS_STARTED);
+        camundaRest.startProcess(update)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                        result -> {
+                            botCommands.sendMessage(chatId, MessageConstants.CAMUNDA_PROCESS_STARTED_SUCCESSFULLY);
+                            botCommands.sendMessageWithButtons(chatId, MessageConstants.SELECT_OPTION, MessageConstants.MAIN_COMMANDS);
+                        },
+                        error -> error.getMessage() // TODO:
+                );
 
     }
 

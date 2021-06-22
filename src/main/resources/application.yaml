@@ -7,3 +7,4 @@ camunda.bpm.admin-user:
 bot:
   name: smart_flashcards_bot
   token: 1846265656:AAG5Ag6rj7ErfHGnem-yDqlQEvcYKvEiIZU
+  baseurl: http://localhost:8080/engine-rest/

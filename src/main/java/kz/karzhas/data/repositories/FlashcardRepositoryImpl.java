@@ -15,11 +15,10 @@ import java.util.List;
 @Repository
 public class FlashcardRepositoryImpl implements FlashcardRepository {
 
-    @Autowired
     FlashcardJpaRepository flashcardJpaRepository;
-    @Autowired
     FlashcardDtoMapper mapper;
 
+    @Autowired
     public FlashcardRepositoryImpl(FlashcardJpaRepository flashcardJpaRepository, FlashcardDtoMapper mapper) {
         this.flashcardJpaRepository = flashcardJpaRepository;
         this.mapper = mapper;
