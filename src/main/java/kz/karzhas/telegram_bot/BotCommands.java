@@ -7,9 +7,13 @@ public interface BotCommands {
 
     void sendMessageWithButtons(long id, String message, List<Button> buttons);
 
+    void sendMessageForceReply(long id, String title);
+
+
     void testInlineKeyboard(long id);
 
     void testReplyKeyboard(long id);
 
     void testForceReply(long id);
+
 }

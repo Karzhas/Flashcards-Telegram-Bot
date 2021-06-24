@@ -1,4 +1,4 @@
-package kz.karzhas.data.mappers;
+package kz.karzhas.mappers;
 
 import kz.karzhas.data.dto.FlashcardDto;
 import kz.karzhas.domain.entity.Flashcard;
@@ -18,7 +18,7 @@ public class FlashcardDtoMapper {
 
     }
 
-    public List<FlashcardDto> entitiesToDto(List<Flashcard> entities){
+    public List<FlashcardDto> entitiesToDtos(List<Flashcard> entities){
         return entities
                 .stream()
                 .map(this::entityToDto)

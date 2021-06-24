@@ -1,16 +1,19 @@
 package kz.karzhas.data.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "flashcard")
 public class FlashcardDto {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
+
+    @Column(name = "frontside")
     private String frontside;
+
+    @Column(name = "backside")
     private String backside;
 
     public FlashcardDto(){}

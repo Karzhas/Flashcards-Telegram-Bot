@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MessageConstants {
+    public static final String SET_FRONTSIDE = "Введите слово на русском языке";
+    public static final String SET_BACKSIDE = "Введите слово на английском языке";
     final static String CAMUNDA_PROCESS_STARTED = "Процесс CAMUNDA BPM запускается... пожалуйста, подождите";
 
     final static String CAMUNDA_PROCESS_STARTED_SUCCESSFULLY = "Процесс успешно создан";

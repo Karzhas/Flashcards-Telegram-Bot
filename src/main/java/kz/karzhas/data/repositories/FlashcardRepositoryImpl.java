@@ -4,7 +4,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kz.karzhas.data.dto.FlashcardDto;
-import kz.karzhas.data.mappers.FlashcardDtoMapper;
+import kz.karzhas.mappers.FlashcardDtoMapper;
 import kz.karzhas.domain.entity.Flashcard;
 import kz.karzhas.domain.repositories.FlashcardRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,7 @@
 package kz.karzhas.telegram_bot;
 
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +25,16 @@ public class BotCommandsImpl implements BotCommands{
     @Override
     public void sendMessage(long id, String message) {
         SendMessage sendMessage = new SendMessage(id, message);
-        //
+        bot.execute(sendMessage);
 
+    }
 
-        //
-        SendResponse response = bot.execute(sendMessage);
-
+    @Override
+    public void sendMessageForceReply(long id, String title){
+        SendMessage sendMessage = new SendMessage(id, title);
+        Keyboard forceReply = new ForceReply(true);
+        sendMessage.replyMarkup(forceReply);
+        bot.execute(sendMessage);
     }
 
     @Override

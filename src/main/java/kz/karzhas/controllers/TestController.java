@@ -3,6 +3,7 @@ package kz.karzhas.controllers;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import kz.karzhas.camunda.CamundaRest;
 import kz.karzhas.domain.entity.Flashcard;
 import kz.karzhas.domain.usecases.AddNewFlashcardUseCase;
 import kz.karzhas.domain.usecases.GetAllFlashcardsUseCase;
@@ -17,18 +18,27 @@ import java.util.List;
 public class TestController {
 
 
+    @Autowired
+    CamundaRest camundaRest;
 
-    @Autowired
     AddNewFlashcardUseCase addNewFlashcardUseCase;
-    @Autowired
     GetAllFlashcardsUseCase getAllFlashcardsUseCase;
 
+    @Autowired
     public TestController(AddNewFlashcardUseCase addNewFlashcardUseCase, GetAllFlashcardsUseCase getAllFlashcardsUseCase) {
         this.addNewFlashcardUseCase = addNewFlashcardUseCase;
         this.getAllFlashcardsUseCase = getAllFlashcardsUseCase;
     }
 
 
+
+
+    @GetMapping("/test")
+    public void test(){
+        camundaRest.getCurrentTask().subscribe(task -> {
+           camundaRest.completeTask(task.getId());
+        });
+    }
 
     @GetMapping("/add/{front}/{back}")
     public void addFlashcard(@PathVariable String front, @PathVariable String back){
