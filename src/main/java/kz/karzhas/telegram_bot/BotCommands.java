@@ -9,6 +9,8 @@ public interface BotCommands {
 
     void sendMessageForceReply(long id, String title);
 
+    void sendAnswerCallbackQuery(String callbackQueryId, String text, Boolean show_alert);
+
 
     void testInlineKeyboard(long id);
 

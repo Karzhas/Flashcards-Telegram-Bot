@@ -2,6 +2,7 @@ package kz.karzhas.telegram_bot;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.*;
+import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,14 @@ public class BotCommandsImpl implements BotCommands{
         SendMessage sendMessage = new SendMessage(id, message);
         bot.execute(sendMessage);
 
+    }
+
+    @Override
+    public void sendAnswerCallbackQuery(String callbackQueryId, String text, Boolean showAlert){
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery(callbackQueryId);
+        answerCallbackQuery.text(text);
+        answerCallbackQuery.showAlert(showAlert);
+        bot.execute(answerCallbackQuery);
     }
 
     @Override

@@ -15,14 +15,16 @@ public interface CamundaRest {
 
     Single<Task> getCurrentTask();
 
-    void completeTask(String id);
+    Completable completeTask(String id, Variables variables);
+    Completable completeTask(String id);
 
-    Completable completeTaskCompletable(String id, Variables variables);
+    //Completable putLocalTaskVariable(String id, String varName, LocalVariable localVariable);
+    Completable putLocalTaskVariable(String id, String varName, String value, String type);
 
-    void completeTask(String id, Variables variables);
-
-    void putLocalTaskVariable(String id, String varName, LocalVariable localVariable);
-
-    Completable putLocalTaskVariableCompletable(String id, String varName, LocalVariable localVariable);
+    //void completeTask(String id);
+    //void completeTask(String id, Variables variables);
+    // void putLocalTaskVariable(String id, String varName, LocalVariable localVariable);
+    //Completable completeTask(String id, Variables variables);
+    //  Completable putLocalTaskVariableCompletable(String id, String varName, LocalVariable localVariable);
 
 }

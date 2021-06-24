@@ -30,11 +30,11 @@ public class UpdatesListenerImpl implements UpdatesListener {
         try {
             updates.forEach(update -> {
 
-                if(update.callbackQuery() != null)
+                if(update.callbackQuery() != null) // Если пришел callbackQuery update
                     processCallbackQuery(update);
-                else if(update.message().replyToMessage() != null)
+                else if(update.message().replyToMessage() != null) // Если пользователь ответил на сообщение
                     processRepliedMessage(update, update.message().replyToMessage());
-                else
+                else // пользователь отправил обычное сообщение
                     processIncommingMessage(update);
 
             });
@@ -45,38 +45,46 @@ public class UpdatesListenerImpl implements UpdatesListener {
     }
 
     private void processRepliedMessage(Update update, Message repliedToMessage) {
-        switch (repliedToMessage.text()){
+        String toWhichMessageUserReplied = repliedToMessage.text();
+        switch (toWhichMessageUserReplied){
             case MessageConstants.SET_FRONTSIDE:
                 camundaRest.getCurrentTask()
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .subscribe(
                                 task -> {
-                                    LocalVariable variable = new LocalVariable(update.message().text(),"String");
-                                    camundaRest.putLocalTaskVariable(task.getId(), "front", variable);
-                                    botCommands.sendMessageForceReply(update.message().chat().id(), MessageConstants.SET_BACKSIDE);
+                                    String frontMessage = update.message().text();
+                                    camundaRest.putLocalTaskVariable(task.getId(), "front", frontMessage, "String")
+                                            .subscribeOn(Schedulers.io())
+                                            .subscribeOn(Schedulers.computation())
+                                            .subscribe(
+                                                    () -> botCommands.sendMessageForceReply(update.message().chat().id(), MessageConstants.SET_BACKSIDE)
+                                            );
+
 
                                 },
                                 error -> error.getMessage() // TODO:
                         );
                 break;
             case MessageConstants.SET_BACKSIDE:
+
                 camundaRest.getCurrentTask()
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .subscribe(
                                 task -> {
-                                    LocalVariable variableBack = new LocalVariable(update.message().text(),"String");
-                                    camundaRest.putLocalTaskVariable(task.getId(), "back", variableBack);
-                                    LocalVariable variableId = new LocalVariable(update.message().chat().id().toString(),"String");
-                                    camundaRest.putLocalTaskVariableCompletable(task.getId(), "id", variableId)
+                                    String backsideMessage = update.message().text();
+                                    String chatId = update.message().chat().id().toString();
+                                    camundaRest.putLocalTaskVariable(task.getId(), "id", chatId, "String")
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(Schedulers.computation())
-                                            .subscribe(() ->
-                                                            camundaRest.completeTask(task.getId())
-                                                            //error -> System.out.println(error.getMessage())
+                                            .subscribe(() -> camundaRest.putLocalTaskVariable(task.getId(), "back", backsideMessage, "String")
+                                                        .subscribeOn(Schedulers.io())
+                                                        .observeOn(Schedulers.computation())
+                                                        .subscribe(() -> camundaRest.completeTask(task.getId()).subscribe() )
 
-                                                        );
+
+                                            );
 
                                 },
                                 error -> error.getMessage() // TODO:
@@ -136,11 +144,10 @@ public class UpdatesListenerImpl implements UpdatesListener {
                             Variables v = new Variables();
                             v.addVariable(new Variables.Variable("command", "string", "getAllFlashcards"));
                             v.addVariable(new Variables.Variable("id", "string", update.callbackQuery().from().id().toString()));
-
-                           // camundaRest.completeTask(task.getId(), v);
-                            camundaRest.completeTaskCompletable(task.getId(), v)
-                                    .observeOn(Schedulers.computation())
+                            v.addVariable(new Variables.Variable("callbackQueryId", "string", update.callbackQuery().id()));
+                            camundaRest.completeTask(task.getId(), v)
                                     .subscribeOn(Schedulers.io())
+                                    .observeOn(Schedulers.computation())
                                     .subscribe(() -> System.out.println("task completed after getAllFlashcards"));
 
                         },
@@ -154,13 +161,20 @@ public class UpdatesListenerImpl implements UpdatesListener {
                 .observeOn(Schedulers.computation())
                 .subscribe(
                         task -> {
-                            Variables v = new Variables();
-                            v.addVariable(new Variables.Variable("command", "string", "addFlashcard"));
-                          //  camundaRest.completeTask(task.getId(), v);
-                            camundaRest.completeTaskCompletable(task.getId(), v)
-                                    .observeOn(Schedulers.computation())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe(() -> botCommands.sendMessageForceReply(update.callbackQuery().from().id(), MessageConstants.SET_FRONTSIDE));
+                            camundaRest.putLocalTaskVariable(task.getId(), "callbackQueryId", update.callbackQuery().id(), "String")
+                                    .subscribe(() -> {
+                                        Variables v = new Variables();
+                                        v.addVariable(new Variables.Variable("command", "string", "addFlashcard"));
+                                        camundaRest.completeTask(task.getId(), v)
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(Schedulers.computation())
+                                                .subscribe(() -> {
+                                                    //camundaRest.putLocalTaskVariable(task.getId(), "callbackQueryId", update.callbackQuery().id(), "String").subscribeOn(Schedulers.io()).observeOn(Schedulers.computation()).subscribe();
+                                                    botCommands.sendMessageForceReply(update.callbackQuery().from().id(), MessageConstants.SET_FRONTSIDE);
+
+                                                });
+
+                                    });
 
                         },
                         error -> error.getMessage() // TODO:

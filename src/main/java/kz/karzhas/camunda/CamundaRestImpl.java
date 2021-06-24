@@ -32,9 +32,9 @@ public class CamundaRestImpl implements CamundaRest{
     @Value("${bot.baseurl}")
     private String baseurl;
 
-    @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
     public CamundaRestImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -71,7 +71,6 @@ public class CamundaRestImpl implements CamundaRest{
         return Single.create(singleEmitter -> {
             ResponseEntity<List<Task>> response = null;
             try {
-
                 response = restTemplate.exchange(
                         baseurl + endpoint,
                         HttpMethod.GET,
@@ -91,7 +90,7 @@ public class CamundaRestImpl implements CamundaRest{
         });
     }
 
-    @Override
+    /*@Override
     public void completeTask(String id) {
         String endpoint = "task/" + id + "/complete";
 
@@ -113,10 +112,10 @@ public class CamundaRestImpl implements CamundaRest{
                 .observeOn(Schedulers.computation())
                 .subscribeOn(Schedulers.io())
                 .subscribe(result -> System.out.println("subscribe " + result));
-    }
+    }*/
 
     @Override
-    public Completable completeTaskCompletable(String id, Variables variables) {
+    public Completable completeTask(String id, Variables variables) {
         String endpoint = "task/" + id + "/complete";
 
         return Completable.create(singleEmitter -> {
@@ -135,13 +134,89 @@ public class CamundaRestImpl implements CamundaRest{
                 singleEmitter.onError(e);
             }
         });
-//                .observeOn(Schedulers.computation())
-//                .subscribeOn(Schedulers.io())
-//                .subscribe(result -> System.out.println("subscribe " + result));
+
+    }
+
+    @Override
+    public Completable completeTask(String id) {
+        String endpoint = "task/" + id + "/complete";
+
+        return Completable.create(singleEmitter -> {
+            try {
+                MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+                Map map = new HashMap<String, String>();
+                map.put("Content-Type", "application/json");
+                headers.setAll(map);
+                HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>("{}", headers);
+                String result = restTemplate.exchange(baseurl + endpoint, HttpMethod.POST, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
+                }).getBody();
+                singleEmitter.onComplete();
+
+            } catch (Exception e) {
+                singleEmitter.onError(e);
+            }
+        });
 
     }
 
 
+
+    @Override
+    public Completable putLocalTaskVariable(String id, String varName, String value, String type) {
+        String endpoint = "task/" + id + "/variables/" + varName;
+        LocalVariable localVariable = new LocalVariable(value,"String");
+        return Completable.create(singleEmitter -> {
+            try {
+                MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+                Map map = new HashMap<String, String>();
+                map.put("Content-Type", "application/json");
+                headers.setAll(map);
+                HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>(localVariable.toString(), headers);
+                ResponseEntity result = restTemplate.exchange(baseurl + endpoint, HttpMethod.PUT, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
+                });
+
+                singleEmitter.onComplete();
+
+
+            } catch (Exception e) {
+                singleEmitter.onError(e);
+            }
+        });
+
+
+
+    }
+
+
+}
+
+
+   /* @Override
+    public Completable putLocalTaskVariable(String id, String varName, LocalVariable localVariable) {
+
+
+        String endpoint = "task/" + id + "/variables/" + varName;
+
+        Single.create(singleEmitter -> {
+            ResponseEntity<String> response = null;
+            try {
+                MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+                Map map = new HashMap<String, String>();
+                map.put("Content-Type", "application/json");
+                headers.setAll(map);
+                // System.out.println(variables.toString());
+                HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>(localVariable.toString(), headers);
+                ResponseEntity result = restTemplate.exchange(baseurl + endpoint, HttpMethod.PUT, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
+                });
+
+            } catch (Exception e) {
+                singleEmitter.onError(e);
+            }
+        })
+        }*/
+
+
+/*
     @Override
     public void completeTask(String id, Variables variables) {
         String endpoint = "task/" + id + "/complete";
@@ -165,61 +240,4 @@ public class CamundaRestImpl implements CamundaRest{
           .observeOn(Schedulers.computation())
           .subscribeOn(Schedulers.io())
           .subscribe(result -> System.out.println("subscribe " + result));
-    }
-
-    @Override
-    public void putLocalTaskVariable(String id, String varName, LocalVariable localVariable) {
-
-
-        String endpoint = "task/" + id + "/variables/" + varName;
-
-        Single.create(singleEmitter -> {
-            ResponseEntity<String> response = null;
-            try {
-                MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-                Map map = new HashMap<String, String>();
-                map.put("Content-Type", "application/json");
-                headers.setAll(map);
-               // System.out.println(variables.toString());
-                HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>(localVariable.toString(), headers);
-                ResponseEntity result = restTemplate.exchange(baseurl + endpoint, HttpMethod.PUT, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
-                });
-
-            } catch (Exception e) {
-                singleEmitter.onError(e);
-            }
-        })
-                .observeOn(Schedulers.computation())
-                .subscribeOn(Schedulers.io())
-                .subscribe(result -> System.out.println("subscribe " + result));
-    }
-
-    @Override
-    public Completable putLocalTaskVariableCompletable(String id, String varName, LocalVariable localVariable) {
-        String endpoint = "task/" + id + "/variables/" + varName;
-
-        return Completable.create(singleEmitter -> {
-            ResponseEntity<String> response = null;
-            try {
-                MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-                Map map = new HashMap<String, String>();
-                map.put("Content-Type", "application/json");
-                headers.setAll(map);
-                // System.out.println(variables.toString());
-                HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>(localVariable.toString(), headers);
-                ResponseEntity result = restTemplate.exchange(baseurl + endpoint, HttpMethod.PUT, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
-                });
-
-                singleEmitter.onComplete();
-
-
-
-            } catch (Exception e) {
-                singleEmitter.onError(e);
-            }
-        });
-
-    }
-
-
-}
+    }*/
