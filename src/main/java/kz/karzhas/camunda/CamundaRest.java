@@ -3,6 +3,7 @@ package kz.karzhas.camunda;
 import com.pengrad.telegrambot.model.Update;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import kz.karzhas.camunda.delegates.ProcessInstance;
 import kz.karzhas.camunda.model.LocalVariable;
 import kz.karzhas.camunda.model.Task;
 import kz.karzhas.camunda.model.Variables;
@@ -20,6 +21,12 @@ public interface CamundaRest {
 
     //Completable putLocalTaskVariable(String id, String varName, LocalVariable localVariable);
     Completable putLocalTaskVariable(String id, String varName, String value, String type);
+
+    Completable stopProcess(String id);
+
+    Single<ProcessInstance> getProcessInstance();
+
+
 
     //void completeTask(String id);
     //void completeTask(String id, Variables variables);

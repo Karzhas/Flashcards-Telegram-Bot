@@ -81,7 +81,9 @@ public class UpdatesListenerImpl implements UpdatesListener {
                                             .subscribe(() -> camundaRest.putLocalTaskVariable(task.getId(), "back", backsideMessage, "String")
                                                         .subscribeOn(Schedulers.io())
                                                         .observeOn(Schedulers.computation())
-                                                        .subscribe(() -> camundaRest.completeTask(task.getId()).subscribe() )
+                                                        .subscribe(() -> {
+                                                            camundaRest.completeTask(task.getId()).subscribe(() -> botCommands.sendMessageWithButtons(Long.parseLong(chatId), MessageConstants.SELECT_OPTION, MessageConstants.MAIN_COMMANDS));
+                                                        } )
 
 
                                             );
@@ -117,7 +119,19 @@ public class UpdatesListenerImpl implements UpdatesListener {
             case MessageConstants.START_LEARNING_FLASHCARDS_CALLBACK_QUERY_ID:
                 onStartLearningFlashcardsSelected(update);
                 break;
+            case MessageConstants.END_PROCESS_CALLBACK_QUERY_ID:
+                endProcess(update);
+                break;
         }
+    }
+
+    private void endProcess(Update update) {
+        camundaRest.getProcessInstance()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(processInstance -> {
+                    camundaRest.stopProcess(processInstance.getId()).subscribe();
+                }, error -> error.getMessage() );
     }
 
     private void onStartLearningFlashcardsSelected(Update update) {

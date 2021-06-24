@@ -5,9 +5,11 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import kz.karzhas.camunda.delegates.ProcessInstance;
 import kz.karzhas.camunda.model.LocalVariable;
 import kz.karzhas.camunda.model.Task;
 import kz.karzhas.camunda.model.Variables;
+import kz.karzhas.telegram_bot.MessageConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -184,6 +186,52 @@ public class CamundaRestImpl implements CamundaRest{
         });
 
 
+
+    }
+
+    @Override
+    public Completable stopProcess(String id) {
+
+        String endpoint = "process-definition/" + id + "?cascade=true";
+        System.out.println(endpoint);
+        return Completable.create(singleEmitter -> {
+            try {
+                MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+                Map map = new HashMap<String, String>();
+                //map.put("Content-Type", "application/json");
+                headers.setAll(map);
+                HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>("", headers);
+                String result = restTemplate.exchange(baseurl + endpoint, HttpMethod.DELETE, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
+                }).getBody();
+                singleEmitter.onComplete();
+
+            } catch (Exception e) {
+                singleEmitter.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public Single<ProcessInstance> getProcessInstance() {
+        String endpoint = "process-definition/key/" + MessageConstants.PROCESS_INSTANCE;
+
+        return Single.create(singleEmitter -> {
+            ResponseEntity<ProcessInstance> response = null;
+            try {
+                MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+                Map map = new HashMap<String, String>();
+                map.put("Content-Type", "application/json");
+                headers.setAll(map);
+                HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>("{}", headers);
+                ProcessInstance result = restTemplate.exchange(baseurl + endpoint, HttpMethod.GET, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<ProcessInstance>() {
+                }).getBody();
+
+                singleEmitter.onSuccess(result);
+
+            } catch (Exception e) {
+                singleEmitter.onError(e);
+            }
+        });
 
     }
 

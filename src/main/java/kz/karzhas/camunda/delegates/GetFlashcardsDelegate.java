@@ -4,6 +4,7 @@ import io.reactivex.schedulers.Schedulers;
 import kz.karzhas.domain.usecases.GetAllFlashcardsUseCase;
 import kz.karzhas.services.GetAllFlashcardsService;
 import kz.karzhas.telegram_bot.BotCommands;
+import kz.karzhas.telegram_bot.MessageConstants;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ public class GetFlashcardsDelegate implements JavaDelegate {
                     String callbackQueryId = (String) delegateExecution.getVariable("callbackQueryId");
                     bot.sendAnswerCallbackQuery(callbackQueryId, "", false);
                     bot.sendMessage(id, msg.toString());
+                    bot.sendMessageWithButtons(id, MessageConstants.SELECT_OPTION, MessageConstants.MAIN_COMMANDS);
                 });
     }
 }
