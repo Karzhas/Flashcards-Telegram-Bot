@@ -1,28 +1,24 @@
 package kz.karzhas.camunda.delegates;
 
-import io.reactivex.schedulers.Schedulers;
 import kz.karzhas.data.dto.FlashcardDto;
-import kz.karzhas.domain.entity.Flashcard;
-import kz.karzhas.domain.usecases.AddNewFlashcardUseCase;
-import kz.karzhas.services.AddFlashcardService;
+import kz.karzhas.services.SaveFlashcardService;
 import kz.karzhas.telegram_bot.BotCommands;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class AddFlashcardDelegate implements JavaDelegate {
 
 
 
-    AddFlashcardService addFlashcardService;
+    SaveFlashcardService saveFlashcardService;
     BotCommands botCommands;
 
     @Autowired
-    public AddFlashcardDelegate(AddFlashcardService addFlashcardService, BotCommands botCommands) {
-        this.addFlashcardService = addFlashcardService;
+    public AddFlashcardDelegate(SaveFlashcardService saveFlashcardService, BotCommands botCommands) {
+        this.saveFlashcardService = saveFlashcardService;
         this.botCommands = botCommands;
     }
 
@@ -34,7 +30,7 @@ public class AddFlashcardDelegate implements JavaDelegate {
         String back = (String) delegateExecution.getVariable("back");
         String callbackQueryId = (String) delegateExecution.getVariable("callbackQueryId");
         FlashcardDto flashcardDto = new FlashcardDto(front,back);
-        addFlashcardService.addFlashcard(flashcardDto);
+        saveFlashcardService.saveFlashcard(flashcardDto);
         botCommands.sendAnswerCallbackQuery(callbackQueryId, "ADDED", true);
     }
 }

@@ -1,4 +1,4 @@
-package kz.karzhas.camunda.delegates;
+package kz.karzhas.camunda.model;
 
 public class ProcessInstance {
 

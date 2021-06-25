@@ -11,6 +11,6 @@ public interface FlashcardRepository {
 
     Single<List<Flashcard>> getFlashcards();
     Single<Flashcard> getFlashcardById(int id);
-    Completable addFlashcard(Flashcard flashcard);
+    Completable saveFlashcard(Flashcard flashcard);
     Completable deleteFlashcard(int id);
 }

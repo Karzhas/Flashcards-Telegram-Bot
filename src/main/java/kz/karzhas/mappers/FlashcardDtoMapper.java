@@ -29,6 +29,8 @@ public class FlashcardDtoMapper {
 
     public Flashcard dtoToEntity(FlashcardDto flashcardDto){
         Flashcard flashcard = new Flashcard();
+        flashcard.setId(flashcardDto.getId());
+        flashcard.setRating(flashcardDto.getRating());
         flashcard.setBackside(flashcardDto.getBackside());
         flashcard.setFrontside(flashcardDto.getFrontside());
         return flashcard;
@@ -37,7 +39,9 @@ public class FlashcardDtoMapper {
     public FlashcardDto entityToDto(Flashcard flashcard){
         FlashcardDto flashcardDto = new FlashcardDto();
         flashcardDto.setBackside(flashcard.getBackside());
+        flashcardDto.setId(flashcard.getId());
         flashcardDto.setFrontside(flashcard.getFrontside());
+        flashcardDto.setRating(flashcard.getRating());
         return flashcardDto;
     }
 }

@@ -1,11 +1,8 @@
 package kz.karzhas.camunda;
 
-import com.pengrad.telegrambot.model.Update;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-import kz.karzhas.camunda.delegates.ProcessInstance;
+import kz.karzhas.camunda.model.ProcessInstance;
 import kz.karzhas.camunda.model.LocalVariable;
 import kz.karzhas.camunda.model.Task;
 import kz.karzhas.camunda.model.Variables;
@@ -14,18 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class CamundaRestImpl implements CamundaRest{
@@ -127,6 +120,7 @@ public class CamundaRestImpl implements CamundaRest{
                 Map map = new HashMap<String, String>();
                 map.put("Content-Type", "application/json");
                 headers.setAll(map);
+                System.out.println(variables.toString());
                 HttpEntity<?> _HttpEntityRequestBodyJson = new HttpEntity<>(variables.toString(), headers);
                 String result = restTemplate.exchange(baseurl + endpoint, HttpMethod.POST, _HttpEntityRequestBodyJson, new ParameterizedTypeReference<String>() {
                 }).getBody();

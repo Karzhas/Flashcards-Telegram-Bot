@@ -17,6 +17,6 @@ public class AddNewFlashcardUseCase implements BaseUseCaseWithParam<Flashcard, C
 
     @Override
     public Completable execute(Flashcard flashcard) {
-        return flashcardRepository.addFlashcard(flashcard);
+        return flashcardRepository.saveFlashcard(flashcard);
     }
 }

@@ -34,7 +34,7 @@ public class GetFlashcardsDelegate implements JavaDelegate {
                                            .append(" ")
                                            .append(dto.getBackside())
                                            .append("\n"));
-                    int id = Integer.parseInt((String) delegateExecution.getVariable("id"));
+                    long id = Long.parseLong((String) delegateExecution.getVariable("id"));
                     String callbackQueryId = (String) delegateExecution.getVariable("callbackQueryId");
                     bot.sendAnswerCallbackQuery(callbackQueryId, "", false);
                     bot.sendMessage(id, msg.toString());

@@ -1,9 +1,11 @@
 package kz.karzhas.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import kz.karzhas.camunda.CamundaRest;
+import kz.karzhas.data.dto.FlashcardDto;
 import kz.karzhas.domain.entity.Flashcard;
 import kz.karzhas.domain.usecases.AddNewFlashcardUseCase;
 import kz.karzhas.domain.usecases.GetAllFlashcardsUseCase;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -33,10 +36,15 @@ public class TestController {
 
 
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @GetMapping("/test")
     public void test(){
-        camundaRest.getCurrentTask().subscribe(task -> {
-           camundaRest.completeTask(task.getId());
+        getAllFlashcardsUseCase.execute().subscribe(flashcards -> {
+            String json =  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(flashcards);
+            List<Flashcard> f = Arrays.asList(objectMapper.readValue(json, Flashcard[].class));
+            System.out.println(1);
         });
     }
 

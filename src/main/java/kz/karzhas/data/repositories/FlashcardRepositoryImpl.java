@@ -28,7 +28,6 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     public Single<List<Flashcard>> getFlashcards() {
         List<FlashcardDto> flashcardDtos = flashcardJpaRepository.findAll();
         List<Flashcard> flashcards = mapper.dtosToEntities(flashcardDtos);
-
         return Single.fromObservable(Observable.just(flashcards));
     }
 
@@ -38,10 +37,17 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     @Override
-    public Completable addFlashcard(Flashcard flashcard) {
+    public Completable saveFlashcard(Flashcard flashcard) {
         flashcardJpaRepository.save(mapper.entityToDto(flashcard));
         return Completable.complete();
     }
+
+    /*@Override
+    public Completable updateFlashcard(Flashcard flashcard) {
+        FlashcardDto dto = mapper.entityToDto(flashcard);
+        flashcardJpaRepository.save(dto);
+        return Completable.complete();
+    }*/
 
     @Override
     public Completable deleteFlashcard(int id) {

@@ -9,19 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AddFlashcardServiceImpl implements AddFlashcardService {
+public class SaveFlashcardServiceImpl implements SaveFlashcardService {
 
     AddNewFlashcardUseCase addNewFlashcardUseCase;
     FlashcardDtoMapper mapper;
 
     @Autowired
-    public AddFlashcardServiceImpl(AddNewFlashcardUseCase addNewFlashcardUseCase, FlashcardDtoMapper mapper) {
+    public SaveFlashcardServiceImpl(AddNewFlashcardUseCase addNewFlashcardUseCase, FlashcardDtoMapper mapper) {
         this.addNewFlashcardUseCase = addNewFlashcardUseCase;
         this.mapper = mapper;
     }
 
     @Override
-    public void addFlashcard(FlashcardDto flashcardDto) {
+    public void saveFlashcard(FlashcardDto flashcardDto) {
         Flashcard flashcard = mapper.dtoToEntity(flashcardDto);
         addNewFlashcardUseCase.execute(flashcard);
     }

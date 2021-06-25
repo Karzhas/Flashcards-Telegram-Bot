@@ -134,10 +134,29 @@ public class UpdatesListenerImpl implements UpdatesListener {
             case MessageConstants.EXIT_CALLBACK_QUERY_ID:
                 goBackToBasicCommands(update);
                 break;
+            case MessageConstants.STOP_FLASHCARDS_CALLBACK_QUERY_ID:
+                stop();
+                break;
 //            case MessageConstants.END_PROCESS_CALLBACK_QUERY_ID:
 //                endProcess(update);
 //                break;
         }
+    }
+
+    private void stop() {
+        camundaRest.getCurrentTask()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                        task -> {
+                            Variables v = new Variables();
+                            v.addVariable(new Variables.Variable("command", "string", "stop"));
+                            camundaRest.completeTask(task.getId(), v).subscribe(() -> {
+                            });
+                        },
+                        error -> error.getMessage() // TODO:
+                );
+
     }
 
     private void goBackToBasicCommands(Update update) {

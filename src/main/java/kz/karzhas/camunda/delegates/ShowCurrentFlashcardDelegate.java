@@ -34,6 +34,8 @@ public class ShowCurrentFlashcardDelegate implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
+        String s = (String)delegateExecution.getVariable("currentIndex");
+
         int currentIndex = Integer.parseInt((String)delegateExecution.getVariable("currentIndex"));
         long chatId = Long.parseLong((String) delegateExecution.getVariable("chatId"));
         //botCommands.sendMessageWithButtons(chatId, "", MessageConstants.OPTIONS_TO_ANSWER_ON_FLASHCARD);
@@ -50,8 +52,6 @@ public class ShowCurrentFlashcardDelegate implements JavaDelegate {
         }
         String randomSide = new Random().nextBoolean() ? flashcardDtos.get(currentIndex).getFrontside() : flashcardDtos.get(currentIndex).getBackside();
         botCommands.sendMessageWithButtons(chatId, randomSide, MessageConstants.OPTIONS_TO_ANSWER_ON_FLASHCARD);
-        currentIndex++;
-        if(currentIndex == flashcardDtos.size())
-            currentIndex = 0;
+
     }
 }

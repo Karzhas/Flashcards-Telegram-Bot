@@ -30,11 +30,11 @@ public class Variables {
     public static class Variable{
         String name;
         String type;
-        int intValue;
+        Long intValue;
         Boolean booleanValue;
         String stringValue;
 
-        public Variable(String name, String type, int intValue) {
+        public Variable(String name, String type, Long intValue) {
             this.name = name;
             this.type = type;
             this.intValue = intValue;

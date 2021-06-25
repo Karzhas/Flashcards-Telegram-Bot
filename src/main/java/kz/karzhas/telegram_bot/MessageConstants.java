@@ -16,12 +16,13 @@ public class MessageConstants {
     public final static String WRONG_CALLBACK_QUERY_ID = "wrongAnswer";
     public final static String TRANSLATE_CALLBACK_QUERY_ID = "showTranslation";
     public final static String CORRECT_CALLBACK_QUERY_ID = "correctAnswer";
-    //private static final String START_LEARN_CALLBACK_QUERY_ID = "startLearn";
+    public static final String STOP_FLASHCARDS_CALLBACK_QUERY_ID = "stop";
 
     public final static List<Button> MAIN_COMMANDS = new ArrayList<Button>(Arrays.asList(
             new Button("Добавить", MessageConstants.ADD_FLASHCARD_CALLBACK_QUERY_ID),
             new Button("Показать все", MessageConstants.GET_ALL_FLASHCARDS_CALLBACK_QUERY_ID),
-            new Button("Учить", MessageConstants.START_LEARNING_FLASHCARDS_CALLBACK_QUERY_ID)
+            new Button("Учить", MessageConstants.START_LEARNING_FLASHCARDS_CALLBACK_QUERY_ID),
+            new Button("ЗАВЕРШИТЬ", MessageConstants.STOP_FLASHCARDS_CALLBACK_QUERY_ID)
            // new Button("Закончить процесс", MessageConstants.END_PROCESS_CALLBACK_QUERY_ID)
 
     ));
