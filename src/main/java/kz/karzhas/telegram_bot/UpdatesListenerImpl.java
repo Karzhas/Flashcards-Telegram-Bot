@@ -5,7 +5,6 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import io.reactivex.schedulers.Schedulers;
 import kz.karzhas.camunda.CamundaRest;
-import kz.karzhas.camunda.model.LocalVariable;
 import kz.karzhas.camunda.model.Variables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -101,7 +100,8 @@ public class UpdatesListenerImpl implements UpdatesListener {
             case "start": // TODO: сделать инлайн через /
                 startProcess(update);
                 break;
-            case "testTask":
+            case "end":
+                endProcess();
                 //botCommands.testSendMessageForceReply(update.message().chat().id());
                 break;
 
@@ -119,13 +119,82 @@ public class UpdatesListenerImpl implements UpdatesListener {
             case MessageConstants.START_LEARNING_FLASHCARDS_CALLBACK_QUERY_ID:
                 onStartLearningFlashcardsSelected(update);
                 break;
-            case MessageConstants.END_PROCESS_CALLBACK_QUERY_ID:
-                endProcess(update);
+            case MessageConstants.CORRECT_CALLBACK_QUERY_ID:
+                System.out.println("correct_callback");
+                flashcardAnswered(update, true);
                 break;
+            case MessageConstants.WRONG_CALLBACK_QUERY_ID:
+                System.out.println("wrong_callback");
+                flashcardAnswered(update, false);
+                break;
+            case MessageConstants.TRANSLATE_CALLBACK_QUERY_ID:
+                System.out.println("translate_callback");
+                showTranslate(update);
+                break;
+            case MessageConstants.EXIT_CALLBACK_QUERY_ID:
+                goBackToBasicCommands(update);
+                break;
+//            case MessageConstants.END_PROCESS_CALLBACK_QUERY_ID:
+//                endProcess(update);
+//                break;
         }
     }
 
-    private void endProcess(Update update) {
+    private void goBackToBasicCommands(Update update) {
+        camundaRest.getCurrentTask()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                        task -> {
+                            Variables v = new Variables();
+                            v.addVariable(new Variables.Variable("command", "string", "exit"));
+                            camundaRest.completeTask(task.getId(), v).subscribe(() -> {
+                                long chatId = update.callbackQuery().from().id();
+                                botCommands.sendMessageWithButtons(chatId, MessageConstants.SELECT_OPTION, MessageConstants.MAIN_COMMANDS);
+                            });
+                        },
+                        error -> error.getMessage() // TODO:
+                );
+    }
+
+    private void showTranslate(Update update) {
+        camundaRest.getCurrentTask()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                        task -> {
+                            Variables v = new Variables();
+                            String randomSide = update.callbackQuery().message().text();
+                            v.addVariable(new Variables.Variable("command", "string", "translate"));
+                            v.addVariable(new Variables.Variable("randomSide", "string", randomSide));
+                            v.addVariable(new Variables.Variable("chatId", "string", update.callbackQuery().from().id().toString()));
+                            camundaRest.completeTask(task.getId(), v).subscribe();
+                        },
+                        error -> error.getMessage() // TODO:
+                );
+    }
+
+
+    private void flashcardAnswered(Update update, boolean isCorrect) {
+        camundaRest.getCurrentTask()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                        task -> {
+                            Variables v = new Variables();
+                            String randomSide = update.callbackQuery().message().text();
+                            v.addVariable(new Variables.Variable("command", "string", "answered"));
+                            v.addVariable(new Variables.Variable("isCorrect", "string", isCorrect ? "true" : "false"));
+                            v.addVariable(new Variables.Variable("randomSide", "string", randomSide));
+                            v.addVariable(new Variables.Variable("chatId", "string", update.callbackQuery().from().id().toString()));
+                            camundaRest.completeTask(task.getId(), v).subscribe();
+                        },
+                        error -> error.getMessage() // TODO:
+                );
+
+    }
+
+    private void endProcess() {
         camundaRest.getProcessInstance()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
@@ -142,8 +211,9 @@ public class UpdatesListenerImpl implements UpdatesListener {
                         task -> {
                             Variables v = new Variables();
                             v.addVariable(new Variables.Variable("command", "string", "startLearnFlashcards"));
-
-                            //camundaRest.completeTask(task.getId(), v);
+                            v.addVariable(new Variables.Variable("currentIndex", "string", "0"));
+                            v.addVariable(new Variables.Variable("chatId", "string", update.callbackQuery().from().id().toString()));
+                            camundaRest.completeTask(task.getId(), v).subscribe();
                         },
                         error -> error.getMessage() // TODO:
                 );

@@ -16,6 +16,9 @@ public class FlashcardDto {
     @Column(name = "backside")
     private String backside;
 
+    @Column(name = "rating")
+    private int rating;
+
     public FlashcardDto(){}
 
     public FlashcardDto(String frontside, String backside) {
@@ -23,10 +26,25 @@ public class FlashcardDto {
         this.backside = backside;
     }
 
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
     public FlashcardDto(Long id, String frontside, String backside) {
         this.id = id;
         this.frontside = frontside;
         this.backside = backside;
+    }
+
+    public FlashcardDto(Long id, String frontside, String backside, int rating) {
+        this.id = id;
+        this.frontside = frontside;
+        this.backside = backside;
+        this.rating = rating;
     }
 
     public Long getId() {
