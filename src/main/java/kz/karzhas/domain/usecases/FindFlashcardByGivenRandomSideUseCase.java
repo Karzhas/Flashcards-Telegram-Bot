@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class FindFlashcardByGivenRandomSideUseCase implements BaseUseCaseWithParam<String, Single<Flashcard>> {
 
-    @Autowired
     FlashcardRepository flashcardRepository;
 
+    @Autowired
     public FindFlashcardByGivenRandomSideUseCase(FlashcardRepository flashcardRepository) {
         this.flashcardRepository = flashcardRepository;
     }

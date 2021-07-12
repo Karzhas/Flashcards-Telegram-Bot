@@ -26,6 +26,7 @@ public class BotCommandsImpl implements BotCommands{
     @Override
     public void sendMessage(long id, String message) {
         SendMessage sendMessage = new SendMessage(id, message);
+        sendMessage.parseMode(ParseMode.Markdown);
         bot.execute(sendMessage);
 
     }
@@ -49,6 +50,7 @@ public class BotCommandsImpl implements BotCommands{
     @Override
     public void sendMessageWithButtons(long id, String message, List<Button> buttons) {
         SendMessage sendMessage = new SendMessage(id, message);
+        sendMessage.parseMode(ParseMode.Markdown);
         InlineKeyboardButton[] keyboardButtons = new InlineKeyboardButton[buttons.size()];
         keyboardButtons = buttons
                 .stream()

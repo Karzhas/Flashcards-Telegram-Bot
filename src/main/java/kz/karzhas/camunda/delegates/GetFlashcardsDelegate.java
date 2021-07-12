@@ -1,7 +1,6 @@
 package kz.karzhas.camunda.delegates;
 
 import io.reactivex.schedulers.Schedulers;
-import kz.karzhas.domain.usecases.GetAllFlashcardsUseCase;
 import kz.karzhas.services.GetAllFlashcardsService;
 import kz.karzhas.telegram_bot.BotCommands;
 import kz.karzhas.telegram_bot.MessageConstants;
@@ -15,24 +14,24 @@ public class GetFlashcardsDelegate implements JavaDelegate {
 
 
     BotCommands bot;
-    GetAllFlashcardsService getAllFlashcardsUseCase;
+    GetAllFlashcardsService getAllFlashcardsService;
 
     @Autowired
-    public GetFlashcardsDelegate(BotCommands bot, GetAllFlashcardsService getAllFlashcardsUseCase) {
+    public GetFlashcardsDelegate(BotCommands bot, GetAllFlashcardsService getAllFlashcardsService) {
         this.bot = bot;
-        this.getAllFlashcardsUseCase = getAllFlashcardsUseCase;
+        this.getAllFlashcardsService = getAllFlashcardsService;
     }
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-        getAllFlashcardsUseCase.getAllFlashcards()
+        getAllFlashcardsService.getAllFlashcards()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(dtos -> {
                     StringBuilder msg = new StringBuilder();
-                    dtos.forEach(dto -> msg.append(dto.getFrontside())
+                    dtos.forEach(dto -> msg.append("*" + dto.getFrontside().toUpperCase() + "*")
                                            .append(" ")
-                                           .append(dto.getBackside())
+                                           .append("*" + dto.getBackside().toUpperCase() + "*")
                                            .append("\n"));
                     long id = Long.parseLong((String) delegateExecution.getVariable("id"));
                     String callbackQueryId = (String) delegateExecution.getVariable("callbackQueryId");

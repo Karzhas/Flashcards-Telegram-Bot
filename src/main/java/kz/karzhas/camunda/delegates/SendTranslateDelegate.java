@@ -29,6 +29,6 @@ public class SendTranslateDelegate implements JavaDelegate {
             translationBuilder.append( dto.getBackside().equals(randomSide) ? dto.getFrontside() : dto.getBackside() );
         });
         String translation = translationBuilder.toString();
-        botCommands.sendMessage(chatId, translation);
+        botCommands.sendMessage(chatId, "перевод: " + "*" + translation.toUpperCase() + "*");
     }
 }

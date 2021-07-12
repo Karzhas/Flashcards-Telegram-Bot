@@ -34,7 +34,6 @@ public class ShowCurrentFlashcardDelegate implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-        String s = (String)delegateExecution.getVariable("currentIndex");
 
         int currentIndex = Integer.parseInt((String)delegateExecution.getVariable("currentIndex"));
         long chatId = Long.parseLong((String) delegateExecution.getVariable("chatId"));

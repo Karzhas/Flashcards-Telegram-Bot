@@ -7,11 +7,11 @@ import java.util.List;
 public class MessageConstants {
     public static final String SET_FRONTSIDE = "Введите слово на русском языке";
     public static final String SET_BACKSIDE = "Введите слово на английском языке";
-    public final static String CAMUNDA_PROCESS_STARTED = "Процесс CAMUNDA BPM запускается... пожалуйста, подождите";
+    public final static String CAMUNDA_PROCESS_STARTED = "Процесс *CAMUNDA BPM* запускается... пожалуйста, подождите";
 
     public final static String CAMUNDA_PROCESS_STARTED_SUCCESSFULLY = "Процесс успешно создан";
 
-    public final static String SELECT_OPTION = "Выберите команду";
+    public final static String SELECT_OPTION = "*Выберите команду*";
 
     public final static String WRONG_CALLBACK_QUERY_ID = "wrongAnswer";
     public final static String TRANSLATE_CALLBACK_QUERY_ID = "showTranslation";
